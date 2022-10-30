@@ -45,7 +45,7 @@ uint32_t image_reader::get_height() const {
     return dib.height;
 }
 
-std::array<uint8_t , 3> image_reader::get_pixel(int x, int y) const{
+std::array<uint8_t , 3> image_reader::get_pixel(int x, int y) {
     char temp[3];
     std::array<uint8_t, 3> retval{};
 
