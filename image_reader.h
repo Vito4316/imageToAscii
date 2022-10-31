@@ -41,6 +41,7 @@ public:
     uint32_t get_size() const;
     uint32_t get_width() const;
     uint32_t get_height() const;
+    bool inBounds(int x, int y);
     std::array<uint8_t, 3> get_pixel(int x, int y);
 
 public:

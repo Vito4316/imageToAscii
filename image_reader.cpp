@@ -45,9 +45,16 @@ uint32_t image_reader::get_height() const {
     return dib.height;
 }
 
+bool image_reader::inBounds(int x, int y) {
+    return x > 0 && x < dib.width && y > 0 && y < dib.height;
+}
+
 std::array<uint8_t , 3> image_reader::get_pixel(int x, int y) {
     char temp[3];
     std::array<uint8_t, 3> retval{};
+
+    if(!inBounds(x, y))
+        return retval;
 
     //move to corresponding bytes
     file_handle.seekg(header.offset + (x + (dib.width * y))*dib.bits_per_pixel/8, file_handle.beg);

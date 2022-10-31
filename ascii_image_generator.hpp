@@ -12,11 +12,10 @@ template <int height, int width>
 class ascii_image_generator {
     image_reader& image;
     char char_matrix[height][width];
-    uint8_t min, max, diff;
+    uint8_t min = 0, max, diff = 255;
 
 private:
     std::array<uint8_t, 3> condensate_pixel(int x, int y);
-
 public:
     void generate_matrix();
     void print_matrix();
