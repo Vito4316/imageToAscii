@@ -6,6 +6,7 @@
 #define IMAGEINASCII_IMAGE_READER_H
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <array>
 
 #define HEADER_SIZE 14
@@ -33,6 +34,8 @@ class image_reader {
         };
         char dib_string[DIB_SIZE];
     }dib;
+
+    std::vector<std::array<uint8_t, 3>> pixels;
 
     std::ifstream file_handle;
 public:

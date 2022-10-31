@@ -20,6 +20,18 @@ image_reader::image_reader(const std::string& path) {
                                                                     * may be unsafe */
 
     file_handle.read(dib.dib_string, DIB_SIZE);
+
+    file_handle.seekg(header.offset, file_handle.beg);
+    for(int i = 0; i < dib.height; i++) {
+        int j;
+        for (j = 0; j < dib.width; j++) {
+            std::array<uint8_t, 3> pixel{};
+            file_handle.read((char *) pixel.data(), dib.bits_per_pixel / 8);
+            std::swap(pixel[0], pixel[2]); //swapping because of little endian
+            pixels.push_back(pixel);
+        }
+        file_handle.seekg(header.offset + 3 * (i+1) * (dib.width + 4 - dib.width % 4)); //skipping padding
+    }
 }
 
 uint32_t image_reader::get_size() const {
@@ -29,7 +41,7 @@ uint32_t image_reader::get_size() const {
 
 [[maybe_unused]] std::string image_reader::get_type() const {
     if(!isOpen) return "";
-    std::string retval = "" ;
+    std::string retval = "";
     retval += header.type[0];
     retval += header.type[1];
     return retval;
@@ -49,24 +61,31 @@ bool image_reader::inBounds(int x, int y) {
     return x > 0 && x < dib.width && y > 0 && y < dib.height;
 }
 
+/*
+ * really slow function!
+ * continuous IO operations!
+ */ /*
 std::array<uint8_t , 3> image_reader::get_pixel(int x, int y) {
-    char temp[3];
-    std::array<uint8_t, 3> retval{};
+    std::array<uint8_t, 3> retval{0,0,0};
 
-    if(!inBounds(x, y))
-        return retval;
+    if(!inBounds(x, y)) return retval;
 
     //move to corresponding bytes
     file_handle.seekg(header.offset + (x + (dib.width * y))*dib.bits_per_pixel/8, file_handle.beg);
-    file_handle.read(temp, dib.bits_per_pixel/8);
+    file_handle.read((char*) retval.data(), dib.bits_per_pixel / 8);
 
-    retval[2] = temp[0]; //bytes are in little endian
-    retval[1] = temp[1];
-    retval[0] = temp[2];
+    std::swap(retval[0], retval[2]); //swapping because of little endian
 
     return retval;
-}
+} */
+
+
 
 image_reader::~image_reader() {
     file_handle.close();
+}
+
+std::array<uint8_t, 3> image_reader::get_pixel(int x, int y) {
+    if(!inBounds(x, y)) return {};
+    return pixels[x + (dib.width * y)];
 }
