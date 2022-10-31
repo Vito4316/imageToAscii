@@ -12,6 +12,7 @@ template <int height, int width>
 class ascii_image_generator {
     image_reader& image;
     char char_matrix[height][width];
+    uint8_t min, max, diff;
 
 private:
     std::array<uint8_t, 3> condensate_pixel(int x, int y);
@@ -19,7 +20,8 @@ private:
 public:
     void generate_matrix();
     void print_matrix();
-
+    char map_to_ascii(std::array<uint8_t, 3> pixel);
+    void export_to_file(std::string filename);
 public:
     ascii_image_generator(image_reader &_image);
 
