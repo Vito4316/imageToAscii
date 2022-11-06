@@ -30,7 +30,8 @@ image_reader::image_reader(const std::string& path) {
             std::swap(pixel[0], pixel[2]); //swapping because of little endian
             pixels.push_back(pixel);
         }
-        file_handle.seekg(header.offset + 3 * (i+1) * (dib.width + 4 - dib.width % 4)); //skipping padding
+        if(dib.width*3 % 4 == 0) file_handle.seekg(header.offset + (i+1) * (dib.width*3));
+        else file_handle.seekg(header.offset + (i+1) * ((dib.width*3) + 4 - (dib.width*3) % 4)); //skipping padding
     }
 }
 
